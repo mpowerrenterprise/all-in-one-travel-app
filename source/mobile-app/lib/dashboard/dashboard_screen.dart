@@ -122,9 +122,6 @@ class TravelTab extends StatefulWidget {
   _TravelTabState createState() => _TravelTabState();
 }
 
-
-
-
 class _TravelTabState extends State<TravelTab> {
   String? selectedVehicle;
   String? selectedDestination;
@@ -290,7 +287,6 @@ class _TravelTabState extends State<TravelTab> {
       timeController.clear();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -503,15 +499,323 @@ class VehicleCard extends StatelessWidget {
 }
 
 
-// Hotels Screen
-class HotelsScreen extends StatelessWidget {
+class HotelsScreen extends StatefulWidget {
+  @override
+  _HotelsScreenState createState() => _HotelsScreenState();
+}
+
+class _HotelsScreenState extends State<HotelsScreen> {
+  String? selectedDistrict;
+  String? selectedHotel;
+  String? selectedRoomType;
+  double pricePerNight = 0;
+  int numberOfDays = 1;
+  double totalAmount = 0;
+  DateTime? selectedDate;
+  int? selectedHotelId; // To store the selected hotel ID
+
+  final List<String> districts = [
+    'Colombo', 'Gampaha', 'Kalutara', 'Kandy', 'Matale', 'Nuwara Eliya',
+    'Galle', 'Matara', 'Hambantota', 'Jaffna', 'Kilinochchi', 'Mannar',
+    'Vavuniya', 'Mullaitivu', 'Batticaloa', 'Ampara', 'Trincomalee',
+    'Kurunegala', 'Puttalam', 'Anuradhapura', 'Polonnaruwa', 'Badulla',
+    'Monaragala', 'Ratnapura', 'Kegalle'
+  ];
+
+  List<Map<String, dynamic>> hotels = [];
+
+  Future<void> fetchHotels(String district) async {
+    final url = '${Config.baseUrl}/hotels';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'district': district}),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          hotels = data.map((hotel) => {
+            'id': hotel['id'], // Store hotel ID
+            'hotel_name': hotel['hotel_name'],
+            'price_single': hotel['price_single'],
+            'price_double': hotel['price_double'],
+            'price_family': hotel['price_family']
+          }).toList();
+          selectedHotel = null; // Reset selected hotel when district changes
+          selectedHotelId = null; // Reset hotel ID
+        });
+      } else {
+        print('Failed to load hotels: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching hotels: $e');
+    }
+  }
+
+  void updateTotalAmount() {
+    setState(() {
+      totalAmount = pricePerNight * numberOfDays;
+    });
+  }
+
+  Future<void> confirmBooking() async {
+    if (selectedHotelId == null || selectedRoomType == null || selectedDate == null) {
+      // Handle case where required fields are not selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select all booking details.')),
+      );
+      return;
+    }
+
+    final url = '${Config.baseUrl}/confirm-booking';
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': 1, // Replace with actual user ID
+        'hotel_id': selectedHotelId,
+        'room_type': selectedRoomType,
+        'days': numberOfDays,
+        'date': DateFormat('yyyy-MM-dd').format(selectedDate!),
+        'total_price': totalAmount,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Booking confirmed successfully!')),
+      );
+
+      // Reset booking form after confirmation
+      setState(() {
+        selectedDistrict = null;
+        selectedHotel = null;
+        selectedHotelId = null;
+        selectedRoomType = null;
+        selectedDate = null;
+        pricePerNight = 0;
+        numberOfDays = 1;
+        totalAmount = 0;
+        hotels = [];
+      });
+
+      // Navigate to BookingSuccessScreen
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => BookingSuccessScreen()),
+      );
+
+
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to confirm booking. Please try again.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Hotel Bookings will be shown here.'),
+    return Scaffold(
+      appBar: AppBar(title: Text('Hotel Bookings')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(labelText: 'Select District', border: OutlineInputBorder()),
+              value: selectedDistrict,
+              items: districts.map((district) {
+                return DropdownMenuItem(
+                  value: district,
+                  child: Text(district),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedDistrict = value;
+                  hotels = []; // Clear previous hotels when a new district is selected
+                  selectedHotel = null; // Reset the selected hotel
+                  fetchHotels(value!); // Fetch hotels for the selected district
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(labelText: 'Select Hotel', border: OutlineInputBorder()),
+              value: selectedHotel,
+              items: hotels.map<DropdownMenuItem<String>>((hotel) {
+                return DropdownMenuItem<String>(
+                  value: hotel['hotel_name'] as String,
+                  child: Text(hotel['hotel_name']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedHotel = value;
+
+                  // Safely find the selected hotel data
+                  final selectedHotelData = hotels.firstWhere(
+                        (hotel) => hotel['hotel_name'] == selectedHotel,
+                  );
+
+                  selectedHotelId = selectedHotelData['id']; // Store hotel ID
+                  pricePerNight = double.tryParse(selectedHotelData['price_single'].toString()) ?? 0.0;
+                  selectedRoomType = 'single';
+                  updateTotalAmount();
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Select Room Type',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _roomTypeOption('🛏️', 'Single', 'single', 1, price: 'price_single'),
+                _roomTypeOption('🛏️🛏️', 'Double', 'double', 2, price: 'price_double'),
+                _roomTypeOption('🏠', 'Family', 'family', 8, price: 'price_family'),
+              ],
+            ),
+            const SizedBox(height: 30),
+            TextFormField(
+              readOnly: true,
+              controller: TextEditingController(
+                text: selectedDate != null
+                    ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                    : 'Select Date',
+              ),
+              decoration: InputDecoration(
+                labelText: 'Select Date',
+                suffixIcon: Icon(Icons.calendar_today),
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+              ),
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(Duration(days: 365)),
+                );
+                if (picked != null) {
+                  setState(() {
+                    selectedDate = picked;
+                  });
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Number of Days', style: TextStyle(fontSize: 16)),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: () {
+                        if (numberOfDays > 1) {
+                          setState(() {
+                            numberOfDays--;
+                            updateTotalAmount();
+                          });
+                        }
+                      },
+                    ),
+                    Text(numberOfDays.toString(), style: TextStyle(fontSize: 16)),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        setState(() {
+                          numberOfDays++;
+                          updateTotalAmount();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text('Total Amount: LKR $totalAmount', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 30),
+      ElevatedButton(
+        onPressed: confirmBooking,
+        style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            alignment: Alignment.center,
+            child: Text(
+              'Confirm Booking',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _roomTypeOption(String emoji, String label, String type, int persons, {required String price}) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedRoomType = type;
+
+          if (selectedHotel != null && selectedDistrict != null) {
+            // Convert the price string to a double
+            final selectedHotelData = hotels.firstWhere((hotel) => hotel['hotel_name'] == selectedHotel);
+            pricePerNight = double.tryParse(selectedHotelData[price].toString()) ?? 0.0;
+            updateTotalAmount();
+          }
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: selectedRoomType == type ? Colors.blue[100] : Colors.white,
+          border: Border.all(
+            color: selectedRoomType == type ? Colors.blue : Colors.grey[300]!,
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(emoji, style: TextStyle(fontSize: 30)),
+            SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              '($persons Persons)',
+              style: TextStyle(fontSize: 12, color: Colors.grey[600], fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
 
 // Tickets Screen
 class TicketsScreen extends StatelessWidget {

@@ -14,7 +14,7 @@ Route::post('/user/change-password/mobile', [UserController::class, 'changePassw
 Route::post('/get_price', [AppController::class, 'getPrice']);
 Route::post('/confirm-booking', [AppController::class, 'storeBooking']);
 Route::post('/hotels', [AppController::class, 'getHotelsByDistrict']);
-
+Route::post('/confirm-booking', [AppController::class, 'storeHotel']);
 
 
 Route::get('/organs/mobile', [AppController::class, 'getOrgans']);

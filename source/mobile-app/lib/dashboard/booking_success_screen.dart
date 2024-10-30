@@ -20,7 +20,7 @@ class BookingSuccessScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               Text(
-                'Travel Booking is successfully completed!',
+                'Booking is successfully completed!',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),

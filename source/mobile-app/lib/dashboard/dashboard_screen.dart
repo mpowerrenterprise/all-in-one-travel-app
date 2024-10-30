@@ -123,6 +123,8 @@ class TravelTab extends StatefulWidget {
 }
 
 class _TravelTabState extends State<TravelTab> {
+
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
   String? selectedVehicle;
   String? selectedDestination;
   DateTime? selectedDate;
@@ -233,19 +235,28 @@ class _TravelTabState extends State<TravelTab> {
     super.dispose();
   }
 
-// Updated confirmBooking method
   Future<void> confirmBooking() async {
     if (selectedVehicle != null &&
         selectedDestination != null &&
         selectedDate != null &&
         selectedTime != null &&
         bookingId != null) {
+      // Retrieve the user ID from secure storage
+      final userId = await _storage.read(key: 'userId');
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User not logged in. Please log in first.')),
+        );
+        return;
+      }
+
       final url = '${Config.baseUrl}/confirm-booking';
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'user_id': 1, // Replace with actual user ID
+          'user_id': int.parse(userId),
+          // Convert userId from String to int if needed
           'booking_id': bookingId,
           'date': DateFormat('yyyy-MM-dd').format(selectedDate!),
           'time': selectedTime!.format(context),
@@ -254,7 +265,6 @@ class _TravelTabState extends State<TravelTab> {
       );
 
       if (response.statusCode == 201) {
-
         // Reset form fields including controllers
         resetForm();
 
@@ -263,10 +273,10 @@ class _TravelTabState extends State<TravelTab> {
           context,
           MaterialPageRoute(builder: (context) => BookingSuccessScreen()),
         );
-
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to confirm booking. Please try again.')),
+          SnackBar(
+              content: Text('Failed to confirm booking. Please try again.')),
         );
       }
     }
@@ -505,6 +515,9 @@ class HotelsScreen extends StatefulWidget {
 }
 
 class _HotelsScreenState extends State<HotelsScreen> {
+
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
+
   String? selectedDistrict;
   String? selectedHotel;
   String? selectedRoomType;
@@ -562,9 +575,17 @@ class _HotelsScreenState extends State<HotelsScreen> {
 
   Future<void> confirmBooking2() async {
     if (selectedHotelId == null || selectedRoomType == null || selectedDate == null) {
-      // Handle case where required fields are not selected
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please select all booking details.')),
+      );
+      return;
+    }
+
+    // Retrieve the user ID from secure storage
+    final userId = await _storage.read(key: 'userId');
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User not logged in. Please log in first.')),
       );
       return;
     }
@@ -574,7 +595,7 @@ class _HotelsScreenState extends State<HotelsScreen> {
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'user_id': 1, // Replace with actual user ID
+        'user_id': int.parse(userId), // Convert userId from String to int if needed
         'hotel_id': selectedHotelId,
         'room_type': selectedRoomType,
         'days': numberOfDays,
@@ -606,8 +627,6 @@ class _HotelsScreenState extends State<HotelsScreen> {
         context,
         MaterialPageRoute(builder: (context) => BookingSuccessScreen()),
       );
-
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to confirm booking. Please try again.')),

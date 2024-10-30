@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config.dart';
 import '../dashboard/dashboard_screen.dart';
-import '../gs-screens/gs_user_waitlist_screen.dart';  // Import the waitlist screen
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -37,16 +36,12 @@ class _LoginScreenState extends State<LoginScreen> {
         final responseData = jsonDecode(response.body);
 
         if (responseData['status'] == 'pending') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const UserWaitlistScreen()),
-          );
+          // Handle pending status if needed
         } else if (responseData['status'] == 'approved') {
-          // Save login status, user ID, email, and full name to secure storage
           await _storage.write(key: 'isLoggedIn', value: 'true');
-          await _storage.write(key: 'userId', value: responseData['data']['id'].toString()); // Save the user ID
-          await _storage.write(key: 'email', value: responseData['data']['email']); // Save the email
-          await _storage.write(key: 'fullName', value: responseData['data']['full_name']); // Save the full name
+          await _storage.write(key: 'userId', value: responseData['data']['id'].toString());
+          await _storage.write(key: 'email', value: responseData['data']['email']);
+          await _storage.write(key: 'fullName', value: responseData['data']['full_name']);
 
           Navigator.pushReplacement(
             context,
@@ -70,13 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
   Future<void> checkLoginStatus() async {
     String? isLoggedIn = await _storage.read(key: 'isLoggedIn');
     if (isLoggedIn == 'true') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DashboardScreen()),
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
       );
     }
   }
@@ -90,9 +84,22 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.redAccent,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
+          title: const Text('Login', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.transparent, // Remove background color to show gradient
+          elevation: 0,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -102,9 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/images/primary_logo.png',
-                height: 200,
-                width: 200,
+                'assets/images/logo.png',
+                height: 300,
+                width: 300,
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -130,19 +137,27 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
+                child: GestureDetector(
+                  onTap: () {
                     if (_formKey.currentState!.validate()) {
                       loginUser();
                     }
                   },
-                  style: ElevatedButton.styleFrom(
+                  child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 15),
-                    backgroundColor: Colors.redAccent,
-                  ),
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
                   ),
                 ),
               ),

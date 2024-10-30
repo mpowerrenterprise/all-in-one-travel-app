@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'gs_search_organs_screen.dart'; // Import the SearchOrgansScreen
+import '../auth-screens/auth_screen.dart';
 
-class MatchNotificationScreen extends StatelessWidget {
-  const MatchNotificationScreen({Key? key}) : super(key: key);
+class BookingManagementScreen extends StatelessWidget {
+  const BookingManagementScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +12,9 @@ class MatchNotificationScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black), // Back arrow icon
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Navigates back to the previous screen
+            Navigator.pop(context);
           },
         ),
       ),
@@ -29,7 +29,7 @@ class MatchNotificationScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
-                    'Match Notification',
+                    'Booking Management',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -39,7 +39,7 @@ class MatchNotificationScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    "Receive instant notifications when an organ matching your requirements is found. Stay updated in real time and take prompt action, ensuring you never miss an opportunity.",
+                    "Effortlessly manage your bookings for hotels, travel, and tickets all in one place. Review, modify, or cancel your reservations as needed, and stay organized on your journey.",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black54,
@@ -53,30 +53,30 @@ class MatchNotificationScreen extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Image.asset(
-                    'assets/images/notification_icon.png', // Replace with your image path
+                    'assets/images/booking_management.png', // Replace with your image path
                     height: 350,
                     width: 350,
                   ),
                 ),
               ),
-              // Next Button
+              // Manage Bookings Button
               Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to SearchOrgansScreen
+                      // Navigate to HomeScreen (or relevant booking details screen)
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SearchOrgansScreen(),
+                          builder: (context) => const HomeScreen(),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.blueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

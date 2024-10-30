@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'gs_messaging_screen.dart'; // Import the MessagingScreen
+import 'gs_booking_hotels_screen.dart'; // Import the MatchNotificationScreen
 
-class SearchOrgansScreen extends StatelessWidget {
-  const SearchOrgansScreen({Key? key}) : super(key: key);
+class BookingTravelsScreen extends StatelessWidget {
+  const BookingTravelsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +12,9 @@ class SearchOrgansScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black), // Back arrow icon
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Navigates back to the previous screen
           },
         ),
       ),
@@ -24,12 +24,12 @@ class SearchOrgansScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Heading and Description
+              // Heading
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
-                    'Search Organs',
+                    'Booking Travels',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -38,8 +38,9 @@ class SearchOrgansScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
+                  // Description
                   const Text(
-                    "Explore available organs based on type, blood group, and other medical criteria. Our intuitive search makes it easy to find exactly what you need.",
+                    "Book your travel from the airport to your destination with ease. Choose from a range of vehicles, check availability, and make reservations instantly for a seamless journey.",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black54,
@@ -53,7 +54,7 @@ class SearchOrgansScreen extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Image.asset(
-                    'assets/images/search_icon.png', // Replace with your image path
+                    'assets/images/booking_travels.png', // Replace with your image path
                     height: 350,
                     width: 350,
                   ),
@@ -66,17 +67,17 @@ class SearchOrgansScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to MessagingScreen
+                      // Navigate to MatchNotificationScreen
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MessagingScreen(),
+                          builder: (context) => const BookingFeatureScreen(),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.blueAccent, // Change button color
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

@@ -28,9 +28,9 @@ class HomeScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 60), // Add spacing at the top
                 Image.asset(
-                  'assets/images/primary_logo.png', // Replace with your logo image path
-                  height: 250,
-                  width: 250,
+                  'assets/images/logo.png', // Replace with your logo image path
+                  height: 350,
+                  width: 350,
                 ),
                 const SizedBox(height: 20),
               ],
@@ -38,13 +38,13 @@ class HomeScreen extends StatelessWidget {
             // Login and Create Account Buttons
             Column(
               children: [
-                // Login Button
+                // Login Button with Gradient Border Only
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40.0),
                   child: SizedBox(
-                    width: 250, // Set fixed width for the button
-                    child: OutlinedButton(
-                      onPressed: () {
+                    width: 250,
+                    child: GestureDetector(
+                      onTap: () {
                         // Navigate to Login Screen
                         Navigator.push(
                           context,
@@ -53,31 +53,44 @@ class HomeScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
+                      child: Container(
+                        padding: const EdgeInsets.all(2), // Border width
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.blue.shade400, Colors.blue.shade700],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        side: const BorderSide(color: Colors.redAccent, width: 2),
-                      ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 18,
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          decoration: BoxDecoration(
+                            color: Colors.white, // Fill color inside border
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: const Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.blueAccent, // Text color matching border
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 15),
-                // Create Account Button
+                // Create Account Button with Solid Gradient Fill
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40.0),
                   child: SizedBox(
-                    width: 250, // Set fixed width for the button
-                    child: ElevatedButton(
-                      onPressed: () {
+                    width: 250,
+                    child: GestureDetector(
+                      onTap: () {
                         // Navigate to CreateAccountScreen
                         Navigator.push(
                           context,
@@ -86,18 +99,24 @@ class HomeScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
+                      child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.blue.shade400, Colors.blue.shade700],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        backgroundColor: Colors.redAccent,
-                      ),
-                      child: const Text(
-                        'Create Account',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'Create Account',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

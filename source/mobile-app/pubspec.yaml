@@ -58,13 +58,11 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/logo.png
-    - assets/images/primary_logo.png
-    - assets/images/request_icon.png
-    - assets/images/notification_icon.png
-    - assets/images/search_icon.png
-    - assets/images/messaging_icon.png
+    - assets/images/booking_travels.png
+    - assets/images/booking_hotels.png
+    - assets/images/booking_tickets.png
+    - assets/images/booking_management.png
     - assets/images/bottom_wave.png
-    - assets/images/waitlist.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

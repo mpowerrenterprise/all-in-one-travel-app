@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../auth-screens/auth_screen.dart';
+import 'gs_booking_tickets_screen.dart'; // Import the correct screen here (e.g., gs_search_hotels_screen)
 
-class MessagingScreen extends StatelessWidget {
-  const MessagingScreen({Key? key}) : super(key: key);
+class BookingFeatureScreen extends StatelessWidget {
+  const BookingFeatureScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +12,9 @@ class MessagingScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black), // Back arrow icon
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Navigates back to the previous screen
           },
         ),
       ),
@@ -29,7 +29,7 @@ class MessagingScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
-                    'Messaging',
+                    'Booking Hotels',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -39,7 +39,7 @@ class MessagingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    "Communicate seamlessly with donors, recipients, and medical professionals through our in-app messaging system, making coordination more efficient and secure.",
+                    "Explore and book the best hotels for your stay. Find accommodations that suit your preferences, check real-time availability, and reserve your room quickly and easily for a comfortable experience.",
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black54,
@@ -53,30 +53,30 @@ class MessagingScreen extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Image.asset(
-                    'assets/images/messaging_icon.png', // Replace with your image path
-                    height: 350,
-                    width: 350,
+                    'assets/images/booking_hotels.png', // Replace with the correct image path for hotel booking
+                    height: 400,
+                    width: 400,
                   ),
                 ),
               ),
-              // Next Button
+              // Get Started Button
               Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to AuthScreen
+                      // Navigate to the next screen, e.g., hotel search screen
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
+                          builder: (context) => const BookingTicketsScreen(), // Update with the actual screen, e.g., SearchHotelsScreen
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.blueAccent, // Updated button color
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

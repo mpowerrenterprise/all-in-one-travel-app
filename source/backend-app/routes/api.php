@@ -13,7 +13,7 @@ Route::get('/user/profile/mobile', [UserController::class, 'getProfile']);
 Route::post('/user/change-password/mobile', [UserController::class, 'changePassword']);
 Route::post('/get_price', [AppController::class, 'getPrice']);
 Route::post('/confirm-booking', [AppController::class, 'storeBooking']);
-
+Route::post('/hotels', [AppController::class, 'getHotelsByDistrict']);
 
 
 

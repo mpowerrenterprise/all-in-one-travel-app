@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BookTravelsVehicle;
 use App\Models\BookTravelsData;
+use App\Models\BookHotel;
 use Carbon\Carbon;
 use App\Models\MobileUser;
 use Illuminate\Support\Facades\Log;
@@ -65,6 +66,17 @@ class AppController extends Controller
             'message' => 'Booking confirmed successfully!',
             'data' => $booking
         ], 201);
+    }
+
+
+    public function getHotelsByDistrict(Request $request)
+    {
+        $request->validate([
+            'district' => 'required|string',
+        ]);
+
+        $hotels = BookHotel::where('place', $request->district)->get(['id', 'hotel_name', 'price_single', 'price_double', 'price_family']);
+        return response()->json($hotels);
     }
     
 

@@ -560,7 +560,7 @@ class _HotelsScreenState extends State<HotelsScreen> {
     });
   }
 
-  Future<void> confirmBooking() async {
+  Future<void> confirmBooking2() async {
     if (selectedHotelId == null || selectedRoomType == null || selectedDate == null) {
       // Handle case where required fields are not selected
       ScaffoldMessenger.of(context).showSnackBar(
@@ -569,7 +569,7 @@ class _HotelsScreenState extends State<HotelsScreen> {
       return;
     }
 
-    final url = '${Config.baseUrl}/confirm-booking';
+    final url = '${Config.baseUrl}/confirm-booking/hotels';
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -745,7 +745,7 @@ class _HotelsScreenState extends State<HotelsScreen> {
             Text('Total Amount: LKR $totalAmount', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 30),
       ElevatedButton(
-        onPressed: confirmBooking,
+        onPressed: confirmBooking2,
         style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
         child: Ink(
           decoration: BoxDecoration(

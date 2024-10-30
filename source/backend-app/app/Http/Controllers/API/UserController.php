@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
+
+    public function KKFUN(){
+        return "He";
+    }
+
     public function profile(Request $request)
     {
         return response()->json($request->user());

@@ -4,14 +4,78 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Organ;
-use App\Models\OrganRequest;
+use App\Models\BookTravelsVehicle;
+use App\Models\BookTravelsData;
 use Carbon\Carbon;
 use App\Models\MobileUser;
-use App\Models\Message;
+use Illuminate\Support\Facades\Log;
+
 
 class AppController extends Controller
 {
+
+    public function getPrice(Request $request)
+    {
+        $request->validate([
+            'vehicle_name' => 'required|string',
+            'place' => 'required|string',
+        ]);
+    
+        $vehicleName = strtolower(str_replace(' ', '_', $request->vehicle_name)); // Normalize vehicle name
+        $vehicle = BookTravelsVehicle::where('vehicle_name', $vehicleName)
+            ->where('place', $request->place)
+            ->first();
+    
+        if ($vehicle) {
+            return response()->json([
+                'booking_id' => $vehicle->id,
+                'price' => $vehicle->price
+            ], 200);
+        } else {
+            return response()->json(['error' => 'No price found for the selected vehicle and destination'], 404);
+        }
+    }
+
+    public function storeBooking(Request $request)
+    {
+        // Validate request data
+        $request->validate([
+            'user_id' => 'required|integer',
+            'booking_id' => 'required|integer',
+            'date' => 'required',
+            'time' => 'required', // Validate time as 12-hour format
+            'total_price' => 'required|numeric'
+        ]);
+    
+        // Convert 12-hour time format to 24-hour format
+        $formattedTime = \Carbon\Carbon::createFromFormat('h:i A', $request->time)->format('H:i:s');
+    
+        // Create a new booking record
+        $booking = new BookTravelsData([
+            'user_id' => $request->user_id,
+            'booking_id' => $request->booking_id,
+            'date' => $request->date,
+            'time' => $formattedTime, // Use the formatted time
+            'total_price' => $request->total_price,
+        ]);
+    
+        $booking->save();
+    
+        return response()->json([
+            'message' => 'Booking confirmed successfully!',
+            'data' => $booking
+        ], 201);
+    }
+    
+
+    
+
+    
+
+
+    ////////////////////////////////////////////
+
+
     public function getOrgans()
     {
         $organs = Organ::select('id', 'organ_name', 'blood_type')->get();

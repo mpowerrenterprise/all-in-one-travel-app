@@ -19,6 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->reportable(function (Throwable $e) {
-            \Log::channel('custom_log')->error($e->getMessage());
+           
         });
     })->create();

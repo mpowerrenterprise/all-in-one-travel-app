@@ -32,6 +32,7 @@ dependencies:
     sdk: flutter
   http: ^0.13.3
   flutter_secure_storage: ^8.0.0
+  intl: ^0.17.0
 
 
 
@@ -63,6 +64,7 @@ flutter:
     - assets/images/booking_tickets.png
     - assets/images/booking_management.png
     - assets/images/bottom_wave.png
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

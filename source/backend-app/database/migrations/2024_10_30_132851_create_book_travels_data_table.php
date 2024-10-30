@@ -18,9 +18,6 @@ return new class extends Migration {
             $table->string('time');
             $table->decimal('total_price', 10, 2); // Define total_price with decimal type for precision
             $table->timestamps();
-
-            // Set up foreign key relationship
-            $table->foreign('booking_id')->references('id')->on('book_travels_vehicle')->onDelete('cascade');
         });
     }
 

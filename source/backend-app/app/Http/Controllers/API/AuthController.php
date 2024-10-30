@@ -17,14 +17,14 @@ class AuthController extends Controller
                 'full_name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:mobile_users',
                 'password' => 'required|string|min:8',
-                'phone_number' => 'nullable|string|max:15',
-                'gender' => 'nullable|string',
+                'phone_number' => 'required|string|max:15|unique:mobile_users',
+                'gender' => 'nullable|string|in:Male,Female',
                 'dob' => 'required|date',
-                'blood_type' => 'nullable|string',
-                'organ' => 'nullable|string',
-                'allergies' => 'nullable|string',
+                'country' => 'nullable|string|max:255',
+                'address' => 'nullable|string',
             ]);
-
+    
+    
             // Create mobile user
             $mobileUser = MobileUser::create([
                 'full_name' => $request->full_name,
@@ -33,18 +33,16 @@ class AuthController extends Controller
                 'phone_number' => $request->phone_number,
                 'gender' => $request->gender,
                 'dob' => $request->dob,
-                'blood_type' => $request->blood_type,
-                'organ' => $request->organ,
-                'allergies' => $request->allergies,
-                'status' => 'pending',
+                'country' => $request->country,
+                'address' => $request->address,
             ]);
-
+    
             // Return success response
             return response()->json([
                 'message' => 'User registered successfully',
                 'user' => $mobileUser,
             ], 201);
-
+    
         } catch (\Exception $e) {
             // Return error response
             return response()->json([
@@ -53,14 +51,14 @@ class AuthController extends Controller
             ], 400);
         }
     }
-
+    
 
     public function login(Request $request)
     {
         // Validate request data
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string',
         ]);
     
         // Attempt to find the user by email
@@ -68,22 +66,13 @@ class AuthController extends Controller
     
         // Check if the user exists and the plain-text password matches
         if ($user && $request->password === $user->password) {
-            // Check if user status is approved
-            if ($user->status !== 'approved') {
-                return response()->json([
-                    'message' => 'Your account is pending approval',
-                    'status' => 'pending',
-                ], 200);
-            }
-    
-            // Password matches and user is approved; return success with selected user details
+            // Password matches; return success with selected user details
             return response()->json([
                 'message' => 'Login successful',
-                'status' => 'approved',
                 'data' => [
-                    'id' => $user->id, // Include the user ID in the response
-                    'email' => $user->email, // Include email
-                    'full_name' => $user->full_name, // Include full name
+                    'id' => $user->id,
+                    'email' => $user->email,
+                    'full_name' => $user->full_name,
                 ],
             ], 200);
         }
@@ -91,5 +80,7 @@ class AuthController extends Controller
         // Invalid credentials
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
+    
+    
    
 }

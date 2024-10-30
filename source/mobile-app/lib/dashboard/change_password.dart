@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config.dart';
-import '../auth-screens/login_screen.dart'; // Import the LoginScreen
+import '../auth-screens/login_screen.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({Key? key}) : super(key: key);
@@ -57,16 +57,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data['success'] == true) {
-        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Password updated successfully! Logging out...')),
         );
 
-        // Clear user session data and navigate to LoginScreen
         await _storage.delete(key: 'userId');
         await _storage.delete(key: 'isLoggedIn');
 
-        // Navigate to the login screen and remove all previous routes
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -87,8 +84,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1A73E8), Color(0xFF4285F4)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
+          title: const Text(
+            'Change Password',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -136,23 +150,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ? const CircularProgressIndicator()
                   : SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange, // Set background to orange
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold, // Bold text
-                    ),
-                  ),
-                  onPressed: () {
+                child: GestureDetector(
+                  onTap: () {
                     if (_formKey.currentState!.validate()) {
                       _changePassword();
                     }
                   },
-                  child: const Text(
-                    'Update Password',
-                    style: TextStyle(color: Colors.white), // White text color
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF1A73E8), Color(0xFF4285F4)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'Update Password',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -16,9 +16,9 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
   String email = '';
   String fullName = '';
   String phoneNumber = '';
-  String bloodType = '';
-  String organ = '';
-  bool isLoading = true; // Track loading state
+  String country = '';
+  String address = '';
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
         const SnackBar(content: Text('User ID not found. Please log in again.')),
       );
       setState(() {
-        isLoading = false; // Stop loading if user ID is not found
+        isLoading = false;
       });
       return;
     }
@@ -56,8 +56,8 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
             fullName = data['data']['full_name'] ?? '';
             email = data['data']['email'] ?? '';
             phoneNumber = data['data']['phone_number'] ?? '';
-            bloodType = data['data']['blood_type'] ?? '';
-            organ = data['data']['organ'] ?? '';
+            country = data['data']['country'] ?? '';
+            address = data['data']['address'] ?? '';
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -75,7 +75,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
       );
     } finally {
       setState(() {
-        isLoading = false; // Stop loading once the data is fetched or an error occurs
+        isLoading = false;
       });
     }
   }
@@ -96,11 +96,10 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: isLoading
-              ? const CircularProgressIndicator() // Show loading indicator
+              ? const CircularProgressIndicator()
               : Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // User Icon
               CircleAvatar(
                 radius: 100,
                 backgroundColor: Colors.grey[300],
@@ -110,8 +109,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                   color: Colors.grey,
                 ),
               ),
-              const SizedBox(height: 20), // Reduced margin between icon and details
-              // Profile Info in Table Format
+              const SizedBox(height: 20),
               Table(
                 columnWidths: const {
                   0: FlexColumnWidth(1),
@@ -121,30 +119,29 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                   _buildTableRow('Full Name:', fullName),
                   _buildTableRow('Email:', email),
                   _buildTableRow('Phone Number:', phoneNumber),
-                  _buildTableRow('Blood Type:', bloodType),
-                  _buildTableRow('Organ:', organ),
+                  _buildTableRow('Country:', country),
+                  _buildTableRow('Address:', address),
                 ],
               ),
               const SizedBox(height: 40),
-              // Go Back Button
               SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange, // Set background to orange
-                    foregroundColor: Colors.white, // Set text color to white
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold, // Bold text
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context); // Go back when pressed
-                  },
-                  child: const Text('Go Back'),
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white, // Ensures text color is white
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Go Back'),
+            ),
+          ),
             ],
           ),
         ),
@@ -159,11 +156,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black54,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54),
           ),
         ),
         Padding(

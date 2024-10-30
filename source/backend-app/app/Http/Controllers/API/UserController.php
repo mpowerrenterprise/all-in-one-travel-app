@@ -19,7 +19,7 @@ class UserController extends Controller
     {
         // Retrieve user_id from query parameters directly
         $userId = $request->query('user_id');
-    
+        
         // Log the user ID to check if it's received correctly
         Log::info('User ID received from request:', ['userId' => $userId]);
     
@@ -29,7 +29,7 @@ class UserController extends Controller
         }
     
         // Fetch the user's profile data using the provided user_id
-        $user = MobileUser::select('full_name', 'email', 'phone_number', 'blood_type', 'organ')
+        $user = MobileUser::select('full_name', 'email', 'phone_number', 'country', 'address')
             ->where('id', $userId)
             ->first();
     
@@ -40,6 +40,7 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'User not found.'], 404);
         }
     }
+    
 
     public function changePassword(Request $request)
     {

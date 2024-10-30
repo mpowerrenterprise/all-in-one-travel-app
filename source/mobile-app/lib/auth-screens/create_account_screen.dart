@@ -23,23 +23,42 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
-  final TextEditingController _allergiesController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
-  // Dropdown options for Blood Type and Organ
+  // Dropdown options for Gender and Country
   String? _selectedGender;
-  String? _selectedBloodType;
-  String? _selectedOrgan;
-
+  String? _selectedCountry;
   final List<String> _genders = ['Male', 'Female'];
-  final List<String> _bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-  final List<String> _organs = [
-    'Kidney', 'Liver', 'Heart', 'Lung', 'Pancreas', 'Small Intestine', 'Corneas', 'Heart Valves', 'Bone Marrow', 'Skin'
+  final List<String> _countries = [
+    'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia',
+    'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin',
+    'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi',
+    'Cabo Verde', 'Cambodia', 'Cameroon', 'Canada', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia',
+    'Comoros', 'Congo, Democratic Republic of the', 'Congo, Republic of the', 'Costa Rica', "Côte d'Ivoire", 'Croatia',
+    'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt',
+    'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia', 'Fiji', 'Finland', 'France',
+    'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau',
+    'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel',
+    'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait',
+    'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg',
+    'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius',
+    'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar (Burma)',
+    'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Macedonia',
+    'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland',
+    'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines',
+    'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone',
+    'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka',
+    'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste',
+    'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine',
+    'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City',
+    'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
   ];
+
 
   Future<void> registerUser() async {
     try {
       final response = await http.post(
-        backendPoint, // Use the centralized backendPoint variable
+        backendPoint,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'full_name': _fullNameController.text,
@@ -48,15 +67,14 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           'phone_number': _phoneController.text,
           'gender': _selectedGender,
           'dob': _dobController.text,
-          'blood_type': _selectedBloodType,
-          'organ': _selectedOrgan,
-          'allergies': _allergiesController.text,
+          'country': _selectedCountry,
+          'address': _addressController.text,
         }),
       );
 
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration successful!')),
+          const SnackBar(content: Text('Registration successful!')),
         );
         setState(() {
           _errorMessage = ''; // Clear any previous error messages
@@ -82,12 +100,25 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Create Account',
-          style: TextStyle(color: Colors.white),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60.0),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
+          title: const Text(
+            'Create Account',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.transparent, // Make background transparent to show gradient
+          elevation: 0,
         ),
-        backgroundColor: Colors.redAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -152,46 +183,28 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 validator: (value) => value!.isEmpty ? 'Enter date of birth' : null,
               ),
               const SizedBox(height: 10),
-              // Blood Type Dropdown
+              // Country Dropdown
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Blood Type'),
-                value: _selectedBloodType,
-                items: _bloodTypes.map((bloodType) {
+                decoration: const InputDecoration(labelText: 'Country'),
+                value: _selectedCountry,
+                items: _countries.map((country) {
                   return DropdownMenuItem(
-                    value: bloodType,
-                    child: Text(bloodType),
+                    value: country,
+                    child: Text(country),
                   );
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
-                    _selectedBloodType = value;
+                    _selectedCountry = value;
                   });
                 },
-                validator: (value) => value == null ? 'Select blood type' : null,
+                validator: (value) => value == null ? 'Select country' : null,
               ),
               const SizedBox(height: 10),
-              // Organ Dropdown
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Organ'),
-                value: _selectedOrgan,
-                items: _organs.map((organ) {
-                  return DropdownMenuItem(
-                    value: organ,
-                    child: Text(organ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedOrgan = value;
-                  });
-                },
-                validator: (value) => value == null ? 'Select organ' : null,
-              ),
-              const SizedBox(height: 10),
-              // Allergies
+              // Address
               TextFormField(
-                controller: _allergiesController,
-                decoration: const InputDecoration(labelText: 'Allergies'),
+                controller: _addressController,
+                decoration: const InputDecoration(labelText: 'Address'),
                 maxLines: 3,
               ),
               const SizedBox(height: 20),
@@ -199,24 +212,32 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               if (_errorMessage.isNotEmpty)
                 Text(
                   _errorMessage,
-                  style: TextStyle(color: Colors.red),
+                  style: const TextStyle(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
               const SizedBox(height: 10),
-              // Submit Button
-              ElevatedButton(
-                onPressed: () {
+              // Submit Button with Gradient
+              GestureDetector(
+                onTap: () {
                   if (_formKey.currentState!.validate()) {
                     registerUser();
                   }
                 },
-                style: ElevatedButton.styleFrom(
+                child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 15),
-                  backgroundColor: Colors.redAccent,
-                ),
-                child: const Text(
-                  'Create Account',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'Create Account',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
               ),
             ],

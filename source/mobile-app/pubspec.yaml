@@ -1,4 +1,4 @@
-name: organ_client_app
+name: AllOneTravelApp
 description: "A client app for organ donation platform"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

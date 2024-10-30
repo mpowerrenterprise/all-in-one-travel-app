@@ -11,6 +11,8 @@ Route::post('/login/mobile', [AuthController::class, 'login']);
 Route::post('register/mobile', [AuthController::class, 'register']);
 Route::get('/user/profile/mobile', [UserController::class, 'getProfile']);
 Route::post('/user/change-password/mobile', [UserController::class, 'changePassword']);
+
+
 Route::get('/organs/mobile', [AppController::class, 'getOrgans']);
 Route::get('/organ/mobile/{id}', [AppController::class, 'getOrganById']);
 Route::post('/request-organ/mobile', [AppController::class, 'requestOrgan']);

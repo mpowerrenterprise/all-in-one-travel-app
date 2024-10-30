@@ -1,4 +1,4 @@
-# organ_client_app
+# AllOneTravelApp
 
 A client app for organ donation platform
 

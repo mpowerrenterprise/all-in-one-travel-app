@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:organ_client_app/gs-screens/get_started_screen.dart';
-import 'package:organ_client_app/dashboard/dashboard_screen.dart';
+import 'package:AllOneTravelApp/gs-screens/get_started_screen.dart';
+import 'package:AllOneTravelApp/dashboard/dashboard_screen.dart';
 
 void main() {
   runApp(const MyApp());

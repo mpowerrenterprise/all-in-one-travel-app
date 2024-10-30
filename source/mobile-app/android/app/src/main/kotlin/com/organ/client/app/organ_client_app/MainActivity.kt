@@ -1,4 +1,4 @@
-package com.organ.client.app.organ_client_app
+package com.all_in_one_travel_app
 
 import io.flutter.embedding.android.FlutterActivity
 

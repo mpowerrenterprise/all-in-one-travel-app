@@ -3,32 +3,45 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class MobileUser extends Model
+class MobileUser extends Authenticatable
 {
     use HasFactory;
 
-    // Define the fillable fields
+    protected $table = 'mobile_users';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
-        'full_name',
-        'username',
         'email',
+        'full_name',
         'password',
         'phone_number',
         'gender',
         'dob',
-        'blood_type',
-        'organ',
-        'allergies',
-        'status',
+        'country',
+        'address',
     ];
 
-    public function organRequests()
-    {
-        return $this->hasMany(OrganRequest::class, 'user_id');
-    }
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password',
+    ];
 
-
-    // Optionally, define any relationships or methods here if needed
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'dob' => 'date',
+    ];
 }

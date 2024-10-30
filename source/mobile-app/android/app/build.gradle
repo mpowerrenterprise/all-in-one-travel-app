@@ -12,7 +12,7 @@ dependencies {
 
 
 android {
-    namespace = "com.organ.client.app.organ_client_app"
+    namespace = "com.all_in_one_travel_app"
     compileSdk = 34 // Updated compile SDK version to the latest stable version
 
     compileOptions {
@@ -25,7 +25,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.organ.client.app.organ_client_app"
+        applicationId = "com.all_in_one_travel_app"
         minSdk = 21 // You can set your preferred min SDK here
         targetSdk = 34 // Updated target SDK version to match compile SDK
         versionCode = flutter.versionCode

@@ -846,6 +846,8 @@ class _TicketsScreenState extends State<TicketsScreen> {
   double ticketPrice = 0.0;
   double totalAmount = 0.0;
 
+  final _storage = const FlutterSecureStorage();
+
   List<Map<String, dynamic>> ticketOptions = []; // Dynamically fetched ticket options
 
   @override
@@ -904,16 +906,26 @@ class _TicketsScreenState extends State<TicketsScreen> {
     });
   }
 
+
   Future<void> updateBooking() async {
     final url = '${Config.baseUrl}/book-tickets/${selectedTicket}'; // Replace selectedTicket with booking_id or unique identifier for the booking
+
     try {
+      final userId = await _storage.read(key: 'userId');
+
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User ID is not available')),
+        );
+        return;
+      }
 
       final response = await http.put(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'user_id': 1,
-          'ticket_name': 2, // Or another identifier if available
+          'user_id': int.parse(userId),
+          'ticket_name': selectedTicket,
           'number_of_tickets': ticketQuantity,
           'total_price': totalAmount,
           'date': DateTime.now().toIso8601String().split('T').first, // Current date in YYYY-MM-DD format
@@ -933,7 +945,6 @@ class _TicketsScreenState extends State<TicketsScreen> {
           context,
           MaterialPageRoute(builder: (context) => BookingSuccessScreen()),
         );
-
       } else {
         print('Failed to update booking: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

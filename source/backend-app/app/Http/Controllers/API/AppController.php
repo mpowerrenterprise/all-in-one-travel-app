@@ -226,6 +226,15 @@ class AppController extends Controller
 
         return response()->json($hotels);
     }
+
+    public function getUserTickets($user_id)
+    {
+        // Fetch ticket bookings for the user
+        $tickets = BookTicketsData::where('user_id', $user_id)
+            ->get(['id', 'ticket_name', 'number_of_tickets', 'total_price', 'date']);
+
+        return response()->json($tickets);
+    }
     
 
 }

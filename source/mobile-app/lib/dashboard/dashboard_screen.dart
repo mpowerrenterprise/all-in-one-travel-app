@@ -1122,6 +1122,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     fetchTotalAmount();
     fetchUserTravelBookings();
     fetchUserHotelBookings();
+    fetchUserTicketBookings(); // Fetch ticket bookings
   }
 
   Future<void> fetchTotalAmount() async {
@@ -1213,6 +1214,39 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     }
   }
 
+  List<Map<String, dynamic>> ticketBookings = []; // List to store ticket bookings
+
+  Future<void> fetchUserTicketBookings() async {
+    final userId = await _storage.read(key: 'userId');
+    final url = '${Config.baseUrl}/user-tickets/$userId';
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: {
+        'Content-Type': 'application/json',
+      });
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          ticketBookings = List<Map<String, dynamic>>.from(data.map((item) {
+            return {
+              'id': item['id'],
+              'ticket_name': item['ticket_name'],
+              'number_of_tickets': item['number_of_tickets'],
+              'total_price': double.tryParse(item['total_price'].toString()) ?? 0.0, // Convert to double
+              'date': item['date'],
+            };
+          }));
+        });
+      } else {
+        print('Failed to fetch ticket bookings: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching ticket bookings: $e');
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -1243,7 +1277,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
           children: [
             buildTravelsTab(),
             buildHotelsTab(),
-            buildTabContent('Total: ${ticketsTotal.toStringAsFixed(0)} LKR', 'All Tickets Bookings will be shown here.'),
+            buildTicketsTab(), // Display ticket bookings in a list
           ],
         ),
       ),
@@ -1394,6 +1428,67 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
       ),
     );
   }
+
+
+  Widget buildTicketsTab() {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          color: Colors.grey[300],
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            'Total: ${ticketsTotal.toStringAsFixed(0)} LKR',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: ticketBookings.length,
+            itemBuilder: (context, index) {
+              final booking = ticketBookings[index];
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              booking['ticket_name'] ?? '',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                              'Date: ${booking['date'] ?? ''}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              'Tickets: ${booking['number_of_tickets']}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '${(booking['total_price'] as double).toStringAsFixed(0)} LKR',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
 
   Widget buildTabContent(String totalText, String contentText) {
     return Column(

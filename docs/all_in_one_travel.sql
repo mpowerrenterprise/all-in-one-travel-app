@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 30, 2024 at 11:48 PM
+-- Generation Time: Oct 31, 2024 at 04:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -151,7 +151,12 @@ INSERT INTO `book_hotels_data` (`id`, `user_id`, `hotel_id`, `room_type`, `days`
 (7, 1, 11, 'double', 6, '2024-11-22', 85200.00, '2024-10-30 16:44:38', '2024-10-30 16:44:38'),
 (8, 1, 14, 'double', 4, '2024-12-19', 50000.00, '2024-10-30 16:49:16', '2024-10-30 16:49:16'),
 (9, 1, 17, 'family', 5, '2024-10-31', 140000.00, '2024-10-30 16:53:01', '2024-10-30 16:53:01'),
-(10, 4, 18, 'double', 3, '2024-10-31', 54000.00, '2024-10-30 17:17:41', '2024-10-30 17:17:41');
+(10, 4, 18, 'double', 3, '2024-10-31', 54000.00, '2024-10-30 17:17:41', '2024-10-30 17:17:41'),
+(11, 4, 17, 'double', 6, '2024-10-31', 102000.00, '2024-10-31 02:40:53', '2024-10-31 02:40:53'),
+(12, 4, 21, 'family', 2, '2024-11-14', 49600.00, '2024-10-31 06:02:19', '2024-10-31 06:02:19'),
+(13, 4, 17, 'double', 3, '2024-10-31', 51000.00, '2024-10-31 06:25:29', '2024-10-31 06:25:29'),
+(14, 4, 12, 'double', 1, '2024-10-31', 14500.00, '2024-10-31 06:29:39', '2024-10-31 06:29:39'),
+(15, 4, 29, 'family', 3, '2024-10-31', 58500.00, '2024-10-31 10:13:39', '2024-10-31 10:13:39');
 
 -- --------------------------------------------------------
 
@@ -307,13 +312,28 @@ INSERT INTO `book_tickets` (`id`, `place`, `ticket_name`, `price`, `created_at`,
 
 CREATE TABLE `book_tickets_data` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `booking_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `ticket_name` varchar(255) NOT NULL,
   `number_of_tickets` int(11) NOT NULL,
   `total_price` decimal(10,2) NOT NULL,
   `date` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `book_tickets_data`
+--
+
+INSERT INTO `book_tickets_data` (`id`, `user_id`, `ticket_name`, `number_of_tickets`, `total_price`, `date`, `created_at`, `updated_at`) VALUES
+(1, 1, '2', 1, 500.00, '2024-10-31', '2024-10-31 05:56:54', '2024-10-31 05:56:54'),
+(2, 1, '2', 1, 500.00, '2024-10-31', '2024-10-31 05:57:45', '2024-10-31 05:57:45'),
+(3, 1, '2', 2, 2400.00, '2024-10-31', '2024-10-31 05:59:58', '2024-10-31 05:59:58'),
+(4, 1, '2', 2, 8000.00, '2024-10-31', '2024-10-31 06:01:06', '2024-10-31 06:01:06'),
+(5, 1, '2', 2, 5000.00, '2024-10-31', '2024-10-31 06:01:16', '2024-10-31 06:01:16'),
+(6, 4, 'Unawatuna Beach Scuba Diving', 3, 12000.00, '2024-10-31', '2024-10-31 06:24:46', '2024-10-31 06:24:46'),
+(7, 4, 'Galle Maritime Museum Entry', 1, 500.00, '2024-10-31', '2024-10-31 06:29:47', '2024-10-31 06:29:47'),
+(8, 4, 'Kelaniya Temple Entry', 2, 1200.00, '2024-10-31', '2024-10-31 10:14:05', '2024-10-31 10:14:05');
 
 -- --------------------------------------------------------
 
@@ -350,7 +370,11 @@ INSERT INTO `book_travels_data` (`id`, `user_id`, `booking_id`, `date`, `time`, 
 (11, 1, 35, '2024-12-13', '05:00:00', 75000.00, '2024-10-30 16:53:16', '2024-10-30 16:53:16'),
 (12, 1, 8, '2025-01-10', '04:09:00', 15000.00, '2024-10-30 17:09:43', '2024-10-30 17:09:43'),
 (13, 1, 35, '2024-10-31', '04:09:00', 75000.00, '2024-10-30 17:09:51', '2024-10-30 17:09:51'),
-(14, 4, 10, '2024-10-31', '04:17:00', 45000.00, '2024-10-30 17:17:30', '2024-10-30 17:17:30');
+(14, 4, 10, '2024-10-31', '04:17:00', 45000.00, '2024-10-30 17:17:30', '2024-10-30 17:17:30'),
+(15, 4, 10, '2024-10-31', '17:25:00', 45000.00, '2024-10-31 02:40:43', '2024-10-31 02:40:43'),
+(16, 4, 35, '2024-10-31', '17:25:00', 75000.00, '2024-10-31 06:25:38', '2024-10-31 06:25:38'),
+(17, 4, 9, '2024-10-31', '17:29:00', 21000.00, '2024-10-31 06:29:30', '2024-10-31 06:29:30'),
+(18, 4, 60, '2024-10-31', '21:13:00', 81000.00, '2024-10-31 10:13:54', '2024-10-31 10:13:54');
 
 -- --------------------------------------------------------
 
@@ -471,7 +495,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (8, '2024_10_30_185923_create_book_hotels_table', 4),
 (9, '2024_10_30_211704_create_book_hotels_data_table', 5),
 (10, '2024_10_30_214929_create_book_tickets_table', 6),
-(11, '2024_10_30_215747_create_book_tickets_data_table', 7);
+(13, '2024_10_30_215747_create_book_tickets_data_table', 7);
 
 -- --------------------------------------------------------
 
@@ -501,7 +525,8 @@ INSERT INTO `mobile_users` (`id`, `email`, `full_name`, `password`, `phone_numbe
 (1, 'guna@gmail.com', 'gunarakulangunarak', '$2y$12$IuGf8eH26cNBZFnXZSQaCOIhyoFWMvyfnioo/LfjzFdZiib9eadPC', '123456789', 'male', '1997-11-10', 'Austria', 'cfddsfds', '2024-10-30 05:51:45', '2024-10-30 05:51:45'),
 (2, 'guna@gmail.comm', 'gunarakula', '$2y$12$nVdI26C3t7hZxK0VOEaYBeflldZR6xsPtkAFgKfM/TtLwMhIAhbIS', '23456', 'male', '1997-11-11', 'Bahamas', 'cxcz', '2024-10-30 05:54:05', '2024-10-30 05:54:05'),
 (3, 'gunaa@gmail.com', 'guna', '12345678', '32457689', 'male', '1997-11-11', 'Brunei', 'sdasdsa', '2024-10-30 05:57:44', '2024-10-30 17:07:41'),
-(4, 'java@gmail.com', 'Java', 'java.com123', '324576', 'male', '1997-11-11', 'Bhutan', 'nonono', '2024-10-30 17:09:16', '2024-10-30 17:09:16');
+(4, 'java@gmail.com', 'Java', 'java.com123', '324576', 'male', '1997-11-11', 'Bhutan', 'nonono', '2024-10-30 17:09:16', '2024-10-30 17:09:16'),
+(5, 'dsadsadsa@gmail.com', 'maaaaa', 'fdsfdsfdsfdsfdsf', '23456432', 'male', '2007-11-11', 'Bahamas', 'dsfds', '2024-10-31 10:15:03', '2024-10-31 10:15:03');
 
 --
 -- Indexes for dumped tables
@@ -572,7 +597,7 @@ ALTER TABLE `book_hotels`
 -- AUTO_INCREMENT for table `book_hotels_data`
 --
 ALTER TABLE `book_hotels_data`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `book_tickets`
@@ -584,13 +609,13 @@ ALTER TABLE `book_tickets`
 -- AUTO_INCREMENT for table `book_tickets_data`
 --
 ALTER TABLE `book_tickets_data`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `book_travels_data`
 --
 ALTER TABLE `book_travels_data`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `book_travels_vehicle`
@@ -602,13 +627,13 @@ ALTER TABLE `book_travels_vehicle`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `mobile_users`
 --
 ALTER TABLE `mobile_users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables

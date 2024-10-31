@@ -12,17 +12,11 @@ class BookTicketsData extends Model
     protected $table = 'book_tickets_data';
 
     protected $fillable = [
-        'booking_id',
+        'user_id',
+        'ticket_name',
         'number_of_tickets',
         'total_price',
         'date',
     ];
 
-    /**
-     * Define relationship with BookTicket (if needed).
-     */
-    public function ticket()
-    {
-        return $this->belongsTo(BookTicket::class, 'booking_id');
-    }
 }

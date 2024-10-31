@@ -8,6 +8,8 @@ use App\Models\BookTravelsVehicle;
 use App\Models\BookTravelsData;
 use App\Models\BookHotel;
 use App\Models\BookHotelsData;
+use App\Models\BookTicket;
+use App\Models\BookTicketsData;
 use Carbon\Carbon;
 use App\Models\MobileUser;
 use Illuminate\Support\Facades\Log;
@@ -109,6 +111,49 @@ class AppController extends Controller
 
         return response()->json(['message' => 'Booking confirmed successfully!', 'data' => $booking], 201);
     }
+
+    public function getTicketsByDistrict(Request $request)
+    {
+
+        $place = $request->input('place');
+
+        
+        // Fetch tickets based on the district (place) from the database
+        $tickets = BookTicket::where('place', $place)
+                          ->select('id', 'ticket_name', 'price')
+                          ->get();
+
+        return response()->json($tickets, 200);
+    }
+
+
+    public function insertTicketBooking(Request $request)
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'user_id' => 'required', // Ensure user_id exists in users table
+            'ticket_name' => 'required', // Ensure booking_id is provided
+            'number_of_tickets' => 'required|integer|min:1',
+            'total_price' => 'required|numeric|min:0',
+            'date' => 'required',
+        ]);
+
+        // Insert a new booking record
+        $ticketData = BookTicketsData::create([
+            'user_id' => $validatedData['user_id'],
+            'ticket_name' => $validatedData['ticket_name'],
+            'number_of_tickets' => $validatedData['number_of_tickets'],
+            'total_price' => $validatedData['total_price'],
+            'date' => $validatedData['date'],
+        ]);
+
+        return response()->json([
+            'message' => 'Booking created successfully',
+            'data' => $ticketData,
+        ], 200);
+    }
+
+    
     
 
 }

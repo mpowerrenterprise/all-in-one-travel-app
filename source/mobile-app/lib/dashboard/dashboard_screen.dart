@@ -834,16 +834,260 @@ class _HotelsScreenState extends State<HotelsScreen> {
   }
 }
 
+class TicketsScreen extends StatefulWidget {
+  @override
+  _TicketsScreenState createState() => _TicketsScreenState();
+}
 
-// Tickets Screen
-class TicketsScreen extends StatelessWidget {
+class _TicketsScreenState extends State<TicketsScreen> {
+  String? selectedDistrict;
+  String? selectedTicket;
+  int ticketQuantity = 1; // Initialize quantity
+  double ticketPrice = 0.0;
+  double totalAmount = 0.0;
+
+  List<Map<String, dynamic>> ticketOptions = []; // Dynamically fetched ticket options
+
+  @override
+  void initState() {
+    super.initState();
+    updateTotalAmount();
+  }
+
+  // Function to fetch tickets based on the selected district
+  Future<void> fetchTicketsByDistrict(String district) async {
+    final url = '${Config.baseUrl}/tickets';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'place': district}),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          // Update the ticket options dynamically based on the response
+          ticketOptions = data.map((ticket) {
+            return {
+              'id': ticket['id'],
+              'name': ticket['ticket_name'],
+              'price': double.tryParse(ticket['price'].toString()) ?? 0.0, // Ensure price is double
+            };
+          }).toList();
+          selectedTicket = null;
+          ticketPrice = 0.0;
+          updateTotalAmount();
+        });
+      } else {
+        print('Failed to load tickets: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching tickets: $e');
+    }
+  }
+
+  void updateTotalAmount() {
+    setState(() {
+      totalAmount = ticketQuantity * ticketPrice;
+    });
+  }
+
+  void clearSelection() {
+    setState(() {
+      selectedDistrict = null;
+      selectedTicket = null;
+      ticketQuantity = 1;
+      ticketPrice = 0.0;
+      totalAmount = 0.0;
+      ticketOptions.clear();
+    });
+  }
+
+  Future<void> updateBooking() async {
+    final url = '${Config.baseUrl}/book-tickets/${selectedTicket}'; // Replace selectedTicket with booking_id or unique identifier for the booking
+    try {
+
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'user_id': 1,
+          'ticket_name': 2, // Or another identifier if available
+          'number_of_tickets': ticketQuantity,
+          'total_price': totalAmount,
+          'date': DateTime.now().toIso8601String().split('T').first, // Current date in YYYY-MM-DD format
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Handle successful update
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Booking updated successfully!'),
+        ));
+
+        clearSelection();
+
+        // Navigate to BookingSuccessScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => BookingSuccessScreen()),
+        );
+
+      } else {
+        print('Failed to update booking: ${response.body}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to update booking.'),
+        ));
+      }
+    } catch (e) {
+      print('Error updating booking: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error updating booking.'),
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Ticket Bookings will be shown here.'),
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 15.0),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                labelText: 'Select District',
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                border: OutlineInputBorder(),
+              ),
+              value: selectedDistrict,
+              items: [
+                'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo',
+                'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy',
+                'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale',
+                'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya',
+                'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'
+              ].map((district) {
+                return DropdownMenuItem(
+                  value: district,
+                  child: Text(district),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedDistrict = value;
+                  ticketOptions.clear();
+                  selectedTicket = null;
+                  ticketPrice = 0.0;
+                  fetchTicketsByDistrict(value!); // Fetch tickets for the selected district
+                });
+              },
+            ),
+            SizedBox(height: 15.0),
+            Text('Select Ticket', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+            // Displaying ticket options as radio buttons
+            ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: ticketOptions.map((ticket) {
+                return RadioListTile<String>(
+                  title: Text(ticket['name']),
+                  subtitle: Text("Price: LKR ${ticket['price']}"),
+                  value: ticket['name'],
+                  groupValue: selectedTicket,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedTicket = value;
+                      // Find the selected ticket's price and update it
+                      ticketPrice = ticketOptions.firstWhere(
+                            (t) => t['name'] == value,
+                        orElse: () => {'price': 0.0},
+                      )['price'];
+                      updateTotalAmount();
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 15.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Number of Tickets',
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: () {
+                        if (ticketQuantity > 1) {
+                          setState(() {
+                            ticketQuantity--;
+                            updateTotalAmount();
+                          });
+                        }
+                      },
+                    ),
+                    Text(ticketQuantity.toString(), style: TextStyle(fontSize: 16.0)),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        setState(() {
+                          ticketQuantity++;
+                          updateTotalAmount();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 10.0),
+            Text(
+              'Total Amount: LKR $totalAmount',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 15.0),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF007AFF), // Blue background color
+                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                ),
+                onPressed: () {
+                  if (selectedDistrict == null || selectedTicket == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Please select all booking details.'),
+                    ));
+                    return;
+                  }
+
+                  // Call the update function and show success message if update is successful
+                  updateBooking();
+                },
+                child: Text(
+                  'Confirm Booking',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
 
 // My Bookings Screen
 class MyBookingsScreen extends StatelessWidget {

@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('book_tickets_data', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('booking_id');
+            $table->unsignedBigInteger('user_id'); // User ID of the person making the booking
+            $table->string('ticket_name');
             $table->integer('number_of_tickets'); // Number of tickets booked
             $table->decimal('total_price', 10, 2); // Total price of booking
             $table->string('date'); // Date of the booking
             $table->timestamps();
+        
         });
     }
 

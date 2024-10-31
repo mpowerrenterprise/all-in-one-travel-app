@@ -18,3 +18,4 @@ Route::post('/confirm-booking/hotels', [AppController::class, 'storeHotel']);
 Route::post('/tickets', [AppController::class, 'getTicketsByDistrict']);
 Route::put('/book-tickets/{booking_id}', [AppController::class, 'insertTicketBooking']);
 Route::get('/total-amount/{user_id}', [AppController::class, 'getTotalAmount']);
+Route::get('/user-travels/{user_id}', [AppController::class, 'getUserTravels']);

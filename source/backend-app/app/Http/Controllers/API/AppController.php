@@ -172,4 +172,36 @@ class AppController extends Controller
         ]);
     }
 
+    public function getUserTravels($user_id)
+    {
+        // Fetch all travel bookings for the user
+        $travels = BookTravelsData::where('user_id', $user_id)
+            ->get(['id', 'user_id', 'booking_id', 'date', 'time', 'total_price']);
+    
+        // Manually join related data for each travel booking
+        $travels = $travels->map(function ($travel) {
+            // Fetch the associated vehicle data using the booking_id
+            $vehicle = BookTravelsVehicle::where('id', $travel->booking_id)->first();
+    
+            // Define a mapping for the vehicle names to human-readable text
+            $vehicleNames = [
+                '3_wheeler' => '3 Wheeler',
+                'car' => 'Car',
+                'van' => 'Van'
+            ];
+    
+            return [
+                'id' => $travel->id,
+                'date' => $travel->date,
+                'time' => $travel->time,
+                'total_price' => $travel->total_price,
+                'vehicle_name' => $vehicle ? ($vehicleNames[$vehicle->vehicle_name] ?? $vehicle->vehicle_name) : null,
+                'place' => $vehicle ? $vehicle->place : null,
+            ];
+        });
+    
+        return response()->json($travels);
+    }
+    
+
 }

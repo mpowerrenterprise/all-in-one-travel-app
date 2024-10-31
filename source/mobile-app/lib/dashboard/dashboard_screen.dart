@@ -1110,7 +1110,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   double hotelsTotal = 0.0;
   double ticketsTotal = 0.0;
   double grandTotal = 0.0;
-  bool isLoading = true; // Loading flag to handle async data
+  bool isLoading = true;
+  List<Map<String, dynamic>> travelBookings = []; // List to store travel bookings
 
   final _storage = const FlutterSecureStorage();
 
@@ -1118,52 +1119,57 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   void initState() {
     super.initState();
     fetchTotalAmount();
+    fetchUserTravelBookings();
   }
 
   Future<void> fetchTotalAmount() async {
     final userId = await _storage.read(key: 'userId');
-    print("Fetched userId: $userId");
-    if (userId == null) {
-      print("User ID not found.");
-      setState(() => isLoading = false);
-      return;
-    }
-
     final url = '${Config.baseUrl}/total-amount/$userId';
-    print("Request URL: $url");
 
     try {
       final response = await http.get(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
       });
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print("Parsed Data: $data");
-
         setState(() {
           travelsTotal = double.parse(data['travelsTotal']);
           hotelsTotal = double.parse(data['hotelsTotal']);
           ticketsTotal = double.parse(data['ticketsTotal']);
           grandTotal = double.tryParse(data['grandTotal'].toString()) ?? 0.0;
-
           isLoading = false;
-          print("Updated Totals: travelsTotal=$travelsTotal, hotelsTotal=$hotelsTotal, ticketsTotal=$ticketsTotal, grandTotal=$grandTotal");
         });
       } else {
-        print('Failed to fetch total: ${response.body}');
         setState(() => isLoading = false);
       }
     } catch (e) {
-      print('Error fetching total: $e');
       setState(() => isLoading = false);
     }
   }
 
+  // Fetches user travel bookings from backend
+  Future<void> fetchUserTravelBookings() async {
+    final userId = await _storage.read(key: 'userId');
+    final url = '${Config.baseUrl}/user-travels/$userId';
 
+    try {
+      final response = await http.get(Uri.parse(url), headers: {
+        'Content-Type': 'application/json',
+      });
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          travelBookings = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        print('Failed to fetch travel bookings: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching travel bookings: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1182,32 +1188,17 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
             unselectedLabelColor: Colors.black54,
             indicatorColor: Colors.black,
             tabs: [
-              Tab(
-                child: Text(
-                  'Travels',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  'Hotels',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  'Tickets',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+              Tab(child: Text('Travels', style: TextStyle(fontWeight: FontWeight.bold))),
+              Tab(child: Text('Hotels', style: TextStyle(fontWeight: FontWeight.bold))),
+              Tab(child: Text('Tickets', style: TextStyle(fontWeight: FontWeight.bold))),
             ],
           ),
         ),
         body: isLoading
-            ? Center(child: CircularProgressIndicator()) // Show loading indicator
+            ? Center(child: CircularProgressIndicator())
             : TabBarView(
           children: [
-            buildTabContent('Total: ${travelsTotal.toStringAsFixed(0)} LKR', 'All Travels Bookings will be shown here.'),
+            buildTravelsTab(), // Display travel bookings in a list
             buildTabContent('Total: ${hotelsTotal.toStringAsFixed(0)} LKR', 'All Hotels Bookings will be shown here.'),
             buildTabContent('Total: ${ticketsTotal.toStringAsFixed(0)} LKR', 'All Tickets Bookings will be shown here.'),
           ],
@@ -1215,6 +1206,72 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
       ),
     );
   }
+
+// Build Travels tab with travel bookings as cards
+  Widget buildTravelsTab() {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          color: Colors.grey[300],
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            'Total: ${travelsTotal.toStringAsFixed(0)} LKR',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: travelBookings.length,
+            itemBuilder: (context, index) {
+              final booking = travelBookings[index];
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              booking['vehicle_name'],
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                              'Place: ${booking['place']}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              'Date: ${booking['date']}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              'Time: ${booking['time']}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '${booking['total_price']} LKR',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+
 
   Widget buildTabContent(String totalText, String contentText) {
     return Column(

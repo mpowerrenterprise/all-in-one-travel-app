@@ -153,7 +153,23 @@ class AppController extends Controller
         ], 200);
     }
 
+    public function getTotalAmount($user_id)
+    {
+
+        // Fetch total amounts from each table
+        $travelsTotal = BookTravelsData::where('user_id', $user_id)->sum('total_price');
+        $hotelsTotal = BookHotelsData::where('user_id', $user_id)->sum('total_price');
+        $ticketsTotal = BookTicketsData::where('user_id', $user_id)->sum('total_price');
     
+        // Calculate grand total
+        $grandTotal = $travelsTotal + $hotelsTotal + $ticketsTotal;
     
+        return response()->json([
+            'travelsTotal' => $travelsTotal,
+            'hotelsTotal' => $hotelsTotal,
+            'ticketsTotal' => $ticketsTotal,
+            'grandTotal' => $grandTotal
+        ]);
+    }
 
 }

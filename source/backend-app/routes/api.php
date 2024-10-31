@@ -17,15 +17,4 @@ Route::post('/hotels', [AppController::class, 'getHotelsByDistrict']);
 Route::post('/confirm-booking/hotels', [AppController::class, 'storeHotel']);
 Route::post('/tickets', [AppController::class, 'getTicketsByDistrict']);
 Route::put('/book-tickets/{booking_id}', [AppController::class, 'insertTicketBooking']);
-
-Route::get('/organs/mobile', [AppController::class, 'getOrgans']);
-Route::get('/organ/mobile/{id}', [AppController::class, 'getOrganById']);
-Route::post('/request-organ/mobile', [AppController::class, 'requestOrgan']);
-Route::post('/check-organ-request/mobile', [AppController::class, 'checkOrganRequest']);
-Route::post('/organs/matching/mobile', [AppController::class, 'getMatchingOrgans']);
-Route::post('/organ-requests/mobile', [AppController::class, 'getUserRequests']);
-Route::post('/send-message/mobile', [AppController::class, 'sendMessage']);
-
-
-
-
+Route::get('/total-amount/{user_id}', [AppController::class, 'getTotalAmount']);

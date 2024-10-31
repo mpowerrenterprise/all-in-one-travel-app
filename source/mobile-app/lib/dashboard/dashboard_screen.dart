@@ -1100,12 +1100,145 @@ class _TicketsScreenState extends State<TicketsScreen> {
 }
 
 
-// My Bookings Screen
-class MyBookingsScreen extends StatelessWidget {
+class MyBookingsScreen extends StatefulWidget {
+  @override
+  _MyBookingsScreenState createState() => _MyBookingsScreenState();
+}
+
+class _MyBookingsScreenState extends State<MyBookingsScreen> {
+  double travelsTotal = 0.0;
+  double hotelsTotal = 0.0;
+  double ticketsTotal = 0.0;
+  double grandTotal = 0.0;
+  bool isLoading = true; // Loading flag to handle async data
+
+  final _storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTotalAmount();
+  }
+
+  Future<void> fetchTotalAmount() async {
+    final userId = await _storage.read(key: 'userId');
+    print("Fetched userId: $userId");
+    if (userId == null) {
+      print("User ID not found.");
+      setState(() => isLoading = false);
+      return;
+    }
+
+    final url = '${Config.baseUrl}/total-amount/$userId';
+    print("Request URL: $url");
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: {
+        'Content-Type': 'application/json',
+      });
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print("Parsed Data: $data");
+
+        setState(() {
+          travelsTotal = double.parse(data['travelsTotal']);
+          hotelsTotal = double.parse(data['hotelsTotal']);
+          ticketsTotal = double.parse(data['ticketsTotal']);
+          grandTotal = double.tryParse(data['grandTotal'].toString()) ?? 0.0;
+
+          isLoading = false;
+          print("Updated Totals: travelsTotal=$travelsTotal, hotelsTotal=$hotelsTotal, ticketsTotal=$ticketsTotal, grandTotal=$grandTotal");
+        });
+      } else {
+        print('Failed to fetch total: ${response.body}');
+        setState(() => isLoading = false);
+      }
+    } catch (e) {
+      print('Error fetching total: $e');
+      setState(() => isLoading = false);
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('All My Bookings will be shown here.'),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blue[50],
+          title: Text(
+            'Grand Total: ${grandTotal.toStringAsFixed(0)} LKR',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          centerTitle: true,
+          bottom: TabBar(
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.black54,
+            indicatorColor: Colors.black,
+            tabs: [
+              Tab(
+                child: Text(
+                  'Travels',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  'Hotels',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  'Tickets',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+        body: isLoading
+            ? Center(child: CircularProgressIndicator()) // Show loading indicator
+            : TabBarView(
+          children: [
+            buildTabContent('Total: ${travelsTotal.toStringAsFixed(0)} LKR', 'All Travels Bookings will be shown here.'),
+            buildTabContent('Total: ${hotelsTotal.toStringAsFixed(0)} LKR', 'All Hotels Bookings will be shown here.'),
+            buildTabContent('Total: ${ticketsTotal.toStringAsFixed(0)} LKR', 'All Tickets Bookings will be shown here.'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildTabContent(String totalText, String contentText) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          color: Colors.grey[300],
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            totalText,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: Center(child: Text(contentText)),
+        ),
+      ],
     );
   }
 }
+
+
+
+
+

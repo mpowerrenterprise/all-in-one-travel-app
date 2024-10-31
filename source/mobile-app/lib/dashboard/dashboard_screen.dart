@@ -1111,7 +1111,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   double ticketsTotal = 0.0;
   double grandTotal = 0.0;
   bool isLoading = true;
-  List<Map<String, dynamic>> travelBookings = []; // List to store travel bookings
+  List<Map<String, dynamic>> travelBookings = [];
+  List<Map<String, dynamic>> hotelBookings = [];
 
   final _storage = const FlutterSecureStorage();
 
@@ -1120,6 +1121,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     super.initState();
     fetchTotalAmount();
     fetchUserTravelBookings();
+    fetchUserHotelBookings();
   }
 
   Future<void> fetchTotalAmount() async {
@@ -1148,7 +1150,6 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     }
   }
 
-  // Fetches user travel bookings from backend
   Future<void> fetchUserTravelBookings() async {
     final userId = await _storage.read(key: 'userId');
     final url = '${Config.baseUrl}/user-travels/$userId';
@@ -1161,7 +1162,16 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          travelBookings = List<Map<String, dynamic>>.from(data);
+          travelBookings = List<Map<String, dynamic>>.from(data.map((item) {
+            return {
+              'id': item['id'],
+              'date': item['date'],
+              'time': item['time'],
+              'total_price': double.tryParse(item['total_price'].toString()) ?? 0.0,  // Convert total_price to double
+              'vehicle_name': item['vehicle_name'],
+              'place': item['place'],
+            };
+          }));
         });
       } else {
         print('Failed to fetch travel bookings: ${response.body}');
@@ -1170,6 +1180,39 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
       print('Error fetching travel bookings: $e');
     }
   }
+
+
+  Future<void> fetchUserHotelBookings() async {
+    final userId = await _storage.read(key: 'userId');
+    final url = '${Config.baseUrl}/user-hotels/$userId';
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: {
+        'Content-Type': 'application/json',
+      });
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          hotelBookings = List<Map<String, dynamic>>.from(data.map((item) {
+            return {
+              'id': item['id'],
+              'hotel_name': item['hotel_name'],
+              'place': item['place'],
+              'date': item['date'],
+              'days': item['days'],
+              'total_price': double.tryParse(item['total_price'].toString()) ?? 0.0,  // Convert to double
+            };
+          }));
+        });
+      } else {
+        print('Failed to fetch hotel bookings: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching hotel bookings: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -1198,8 +1241,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
             ? Center(child: CircularProgressIndicator())
             : TabBarView(
           children: [
-            buildTravelsTab(), // Display travel bookings in a list
-            buildTabContent('Total: ${hotelsTotal.toStringAsFixed(0)} LKR', 'All Hotels Bookings will be shown here.'),
+            buildTravelsTab(),
+            buildHotelsTab(),
             buildTabContent('Total: ${ticketsTotal.toStringAsFixed(0)} LKR', 'All Tickets Bookings will be shown here.'),
           ],
         ),
@@ -1207,7 +1250,6 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     );
   }
 
-// Build Travels tab with travel bookings as cards
   Widget buildTravelsTab() {
     return Column(
       children: [
@@ -1237,12 +1279,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              booking['vehicle_name'],
+                              booking['vehicle_name'] ?? '',
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             SizedBox(height: 6),
                             Text(
-                              'Place: ${booking['place']}',
+                              'Place: ${booking['place'] ?? ''}',
                               style: TextStyle(fontSize: 16),
                             ),
                             Text(
@@ -1257,7 +1299,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                         ),
                       ),
                       Text(
-                        '${booking['total_price']} LKR',
+                        '${(booking['total_price'] as double).toStringAsFixed(0)} LKR',  // Cast to double just to be safe
                         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -1272,6 +1314,86 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   }
 
 
+
+  Widget buildHotelsTab() {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          color: Colors.grey[300],
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            'Total: ${hotelsTotal.toStringAsFixed(0)} LKR',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: hotelBookings.length,
+            itemBuilder: (context, index) {
+              final booking = hotelBookings[index];
+              return buildBookingCard(
+                title: booking['hotel_name'],
+                place: booking['place'],
+                date: booking['date'],
+                time: 'Days: ${booking['days']}',
+                totalPrice: booking['total_price'],
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+// Helper method to build a booking card
+  Widget buildBookingCard({
+    required String title,
+    required String place,
+    required String date,
+    required String time,
+    required double totalPrice,  // Expect totalPrice to be a double
+  }) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    'Place: $place',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Text(
+                    'Date: $date',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Text(
+                    time,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '${totalPrice.toStringAsFixed(0)} LKR',  // Format the price as needed
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget buildTabContent(String totalText, String contentText) {
     return Column(

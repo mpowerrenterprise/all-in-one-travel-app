@@ -202,6 +202,30 @@ class AppController extends Controller
     
         return response()->json($travels);
     }
+
+    public function getUserHotels($user_id)
+    {
+        // Fetch all hotel bookings for the user with related hotel data
+        $hotels = BookHotelsData::where('user_id', $user_id)
+            ->get(['id', 'user_id', 'hotel_id', 'room_type', 'days', 'date', 'total_price']);
+
+        // Attach hotel information (name and place) based on hotel_id
+        $hotels = $hotels->map(function ($hotel) {
+            $hotelDetails = BookHotel::where('id', $hotel->hotel_id)->first();
+
+            return [
+                'id' => $hotel->id,
+                'date' => $hotel->date,
+                'room_type' => ucfirst($hotel->room_type), // Capitalize room type for readability
+                'days' => $hotel->days,
+                'total_price' => $hotel->total_price,
+                'hotel_name' => $hotelDetails ? $hotelDetails->hotel_name : null,
+                'place' => $hotelDetails ? $hotelDetails->place : null,
+            ];
+        });
+
+        return response()->json($hotels);
+    }
     
 
 }

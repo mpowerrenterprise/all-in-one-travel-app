@@ -51,15 +51,13 @@ class AppController extends Controller
             'total_price' => 'required|numeric'
         ]);
     
-        // Convert 12-hour time format to 24-hour format
-        $formattedTime = \Carbon\Carbon::createFromFormat('h:i A', $request->time)->format('H:i:s');
-    
+        
         // Create a new booking record
         $booking = new BookTravelsData([
             'user_id' => $request->user_id,
             'booking_id' => $request->booking_id,
             'date' => $request->date,
-            'time' => $formattedTime, // Use the formatted time
+            'time' => $request->time,
             'total_price' => $request->total_price,
         ]);
     

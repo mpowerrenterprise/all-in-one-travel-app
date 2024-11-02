@@ -143,9 +143,7 @@ We are using Laravel as the backend framework to manage database interactions an
 
 ## 05 Demo
 
-### 5.1 Mobile App
-
-#### 5.1.1 Get Started
+### 5.1 Get Started
 
 <p align="center">
   <img src="docs/screenshots/1.png" alt="Get Started Screen" width="200"/>
@@ -162,7 +160,7 @@ We are using Laravel as the backend framework to manage database interactions an
 </p>
 
 
-#### 5.1.2 Auth Screens
+### 5.2 Auth Screens
 
 
 <p align="center">
@@ -176,7 +174,7 @@ We are using Laravel as the backend framework to manage database interactions an
 </p>
 
 
-#### 5.1.3 Dashboard Screens
+### 5.3 Dashboard Screens
 
 <p align="center">
  <img src="docs/screenshots/9.png" alt="Match Found Screen" width="200"/>  
@@ -200,7 +198,7 @@ We are using Laravel as the backend framework to manage database interactions an
 
 
 
-#### 5.1.4 Profile Screens
+### 5.4 Profile Screens
 
 <p align="center">
  <img src="docs/screenshots/16.png" alt="Match Found Screen" width="200"/>  

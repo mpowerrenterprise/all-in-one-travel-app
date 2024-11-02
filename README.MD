@@ -37,7 +37,7 @@ The Organ Donation App is built using the following technology stack:
 
 
 
-## 03 Setup Backend
+## 03 Setup Backend Endpoint
 
 To run the app successfully, we first need to set up the backend endpoint. This will allow the mobile app to communicate with the backend server for processing bookings, managing reservations, and fetching travel information.
 
@@ -54,7 +54,7 @@ This file comes preloaded with data specific to Sri Lanka, including hotel price
 
 Alternatively, if you prefer to start with a fresh database, you can run the following command: `php artisan migrate` However, please note that this command will create an empty database structure without any preloaded data.
 
-### Step 02: Setup .env file from .env
+### Step 02: Setup .env file
 
 ```
 APP_NAME=AllInOneTravel

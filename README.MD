@@ -11,11 +11,19 @@
 ```
 
 ## 01 Introduction
-The Organ Donation App is an integrated mobile and web-based platform designed to facilitate communication and management between patients seeking organ transplants and hospitals providing them. This app aims to streamline the organ donation process by offering essential functionalities, such as organ match identification, organ requests, and direct communication with hospitals. The platform is structured into two main components:
+The All-In-One Travel App is a comprehensive platform designed to simplify and enhance the
+travel experience in Sri Lanka. Whether a local or an international tourist, this app empowers
+you to effortlessly book every aspect of your journey—from travel arrangements and
+accommodations to tickets for must-see attractions—all in one place. Tailored specifically for the
+vibrant destinations of Sri Lanka, the app brings together essential travel services, providing a
+user-friendly, seamless interface to plan, manage, and enjoy your trip.
 
-Mobile Application: Primarily designed for end-users (patients), the mobile app enables users to search for organ matches, request organs, and communicate directly with hospitals. It provides a user-friendly experience that guides patients through requesting an organ, receiving match notifications, and sending messages to hospital representatives.
-
-Backend Management Panel: Accessible to hospital administrators and medical personnel, the backend panel serves as a centralized hub for managing patient requests, responding to messages, approving or denying organ requests, and monitoring overall user interactions. This panel streamlines administrative workflows, ensuring that hospital staff can manage cases efficiently and reach out to patients seamlessly.
+With features that allow you to book transportation, find top-rated hotels, and reserve tickets for
+popular tourist spots, the All-In-One Travel App is the ultimate companion for a hassle-free
+exploration of Sri Lanka. Each service is designed with convenience in mind, enabling you to
+make reservations, view details, and manage your bookings directly from your mobile device.
+Explore Sri Lanka like never before with a travel app that keeps everything organized and at
+your fingertips.
 
 ![Organ Donation App Banner](docs/media/images/0-banner-image.jpeg)
 
@@ -29,27 +37,27 @@ The Organ Donation App is built using the following technology stack:
 
 
 
+## 03 Setup Backend
 
-## 03 Setup Web App
+To run the app successfully, we first need to set up the backend endpoint. This will allow the mobile app to communicate with the backend server for processing bookings, managing reservations, and fetching travel information.
 
-Here, we are setting up the Web App. Later, we will provide instructions to set up the mobile app.
-
-**Web App Source Folder:** `source/web-app`
-
+**Backend App Source Folder:** `source/backend-app`
 
 
 ### Step 01: Setup database 
 
 ```
-php artisan migrate
+docs/all_in_one_travel.sql
 ```
 
-Note: A populated database is already available and can be found inside docs/organ_app.sql. You can also import it manually if needed.
+This file comes preloaded with data specific to Sri Lanka, including hotel prices, travel costs, and other essential travel information.
+
+Alternatively, if you prefer to start with a fresh database, you can run the following command: `php artisan migrate` However, please note that this command will create an empty database structure without any preloaded data.
 
 ### Step 02: Setup .env file from .env
 
 ```
-APP_NAME=OrganApp
+APP_NAME=AllInOneTravel
 APP_ENV=local
 APP_KEY=base64:yj7t43y+JJ+syX8zNcf+YIgEyvgIMRAm23RiDRPJavU=
 APP_DEBUG=true
@@ -59,7 +67,7 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=organ_app
+DB_DATABASE=all_in_one_travel
 DB_USERNAME=root
 DB_PASSWORD=
 ```
@@ -85,7 +93,8 @@ php artisan serve
 
 ## 04 Setup Mobile App
 
-In this section, we will set up the mobile app, designed for patients to search for organ matches, request organs, and communicate with hospitals directly. 
+In this section, we will set up the mobile app, designed for travelers to book transportation, find accommodations, and reserve tickets for popular attractions across Sri Lanka. This mobile app provides a user-friendly experience that allows tourists to plan, manage, and enjoy their trip all in one place.
+
 
 **Mobile App Source Folder:** `source/mobile-app`
 
@@ -134,115 +143,68 @@ We are using Laravel as the backend framework to manage database interactions an
 
 ## 05 Demo
 
-### 5.1 Web App
+### 5.1 Mobile App
 
-#### 5.1.1 Login Screen
-
-![Organ Donation App Banner](docs/screenshots/web-app/1-login-screen.png)
-
-
-#### 5.1.2 Dashboard
-
-![Organ Donation App Banner](docs/screenshots/web-app/2-dashboard-screenshot.png)
-
-![Organ Donation App Banner](docs/screenshots/web-app/3-dashboard-screenshot-2.png)
-
-#### 5.1.3 Add Organs
-
-![Organ Donation App Banner](docs/screenshots/web-app/4-add-organ-screenshot-1.png)
-
-![Organ Donation App Banner](docs/screenshots/web-app/4-add-organ-screenshot-2.png)
-
-#### 5.1.4 Request Organs
-
-![Organ Donation App Banner](docs/screenshots/web-app/5-request-organ-screenshot.png)
-
-#### 5.1.5 Mobile User Management
-
-![Organ Donation App Banner](docs/screenshots/web-app/6-mobile-user-accounts-screenshot.png)
-
-#### 5.1.6 Messages
-
-![Organ Donation App Banner](docs/screenshots/web-app/7-messages-screenshot.png)
-
-#### 5.1.7 Settings
-
-![Organ Donation App Banner](docs/screenshots/web-app/8-settings-screenshot.png)
-
-
-### 5.2 Mobile App
-
-#### 5.2.1 Get Started
+#### 5.1.1 Get Started
 
 <p align="center">
-  <img src="docs/screenshots/mobile-app/1-get-started.png" alt="Get Started Screen" width="200"/>
-  <img src="docs/screenshots/mobile-app/2-gs-request-organs.png" alt="Request Organs Screen" width="200"/>
+  <img src="docs/screenshots/1.png" alt="Get Started Screen" width="200"/>
+  <img src="docs/screenshots/2.png" alt="Request Organs Screen" width="200"/>
   </p>
 <p align="center">
-  <img src="docs/screenshots/mobile-app/3-gs-match-found.png" alt="Match Found Screen" width="200"/>
-  <img src="docs/screenshots/mobile-app/4-search-organs.png" alt="Search Organs Screen" width="200"/>
+  <img src="docs/screenshots/3.png" alt="Match Found Screen" width="200"/>
+  <img src="docs/screenshots/4.png" alt="Search Organs Screen" width="200"/>
   
 </p>
 
-
-#### 5.2.2 Auth Screens
-
-
 <p align="center">
- <img src="docs/screenshots/mobile-app/6-logging.png" alt="Get Started Screen" width="200"/>
-  <img src="docs/screenshots/mobile-app/7-create-a-new-account.png" alt="Request Organs Screen" width="200"/>
+  <img src="docs/screenshots/5.png" alt="Match Found Screen" width="200"/>  
 </p>
 
-<p align="center">
 
-<img src="docs/screenshots/mobile-app/8-user-waiting-screen.png" alt="Match Found Screen" width="200"/>
+#### 5.1.2 Auth Screens
 
-<img src="docs/screenshots/mobile-app/9-login-screen.png" alt="Match Found Screen" width="200"/>
-
-</p>
-
-#### 5.2.3 Profile Screens
 
 <p align="center">
-
-<img src="docs/screenshots/mobile-app/10-user-profile-screen.png" alt="Match Found Screen" width="200"/>
-
-<img src="docs/screenshots/mobile-app/11-change-password.png" alt="Match Found Screen" width="200"/>
-
-</p>
-
-#### 5.2.4 Dashboard Screens
-
-<p align="center">
-
-<img src="docs/screenshots/mobile-app/12-organ-search.png" alt="Match Found Screen" width="200"/>
-
-<img src="docs/screenshots/mobile-app/13-organ-request.png" alt="Match Found Screen" width="200"/>
-
+ <img src="docs/screenshots/6.png" alt="Match Found Screen" width="200"/>  
+ <img src="docs/screenshots/7.png" alt="Match Found Screen" width="200"/>  
 </p>
 
 
 <p align="center">
+ <img src="docs/screenshots/8.png" alt="Match Found Screen" width="200"/>  
+</p>
 
-<img src="docs/screenshots/mobile-app/14-organ-view.png" alt="Match Found Screen" width="200"/>
 
-<img src="docs/screenshots/mobile-app/15-my-matches.png" alt="Match Found Screen" width="200"/>
+#### 5.1.3 Dashboard Screens
 
+<p align="center">
+ <img src="docs/screenshots/9.png" alt="Match Found Screen" width="200"/>  
+  <img src="docs/screenshots/10.png" alt="Match Found Screen" width="200"/>  
+</p>
+
+<p align="center">
+ <img src="docs/screenshots/11.png" alt="Match Found Screen" width="200"/>  
+  <img src="docs/screenshots/12.png" alt="Match Found Screen" width="200"/>  
 </p>
 
 
 <p align="center">
-
-<img src="docs/screenshots/mobile-app/16-my-requests.png" alt="Match Found Screen" width="200"/>
-
-<img src="docs/screenshots/mobile-app/17-messaging.png" alt="Match Found Screen" width="200"/>
-
+ <img src="docs/screenshots/13.png" alt="Match Found Screen" width="200"/>  
+  <img src="docs/screenshots/14.png" alt="Match Found Screen" width="200"/>  
 </p>
 
 <p align="center">
+ <img src="docs/screenshots/15.png" alt="Match Found Screen" width="200"/>  
+</p>
 
-<img src="docs/screenshots/mobile-app/18-message-sent.png" alt="Match Found Screen" width="200"/>
 
+
+#### 5.1.4 Profile Screens
+
+<p align="center">
+ <img src="docs/screenshots/16.png" alt="Match Found Screen" width="200"/>  
+  <img src="docs/screenshots/17.png" alt="Match Found Screen" width="200"/>  
 </p>
 
 

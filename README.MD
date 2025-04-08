@@ -1,4 +1,4 @@
-# PBDS
+# All in One Travel App
 
 ## Repo Structure
 
